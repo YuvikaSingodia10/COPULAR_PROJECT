@@ -29,7 +29,6 @@ With robust multi-tenant workspace isolation, detailed diversity analytics, and 
 - **📊 Diversity & Fairness Analytics**: Built-in visual dashboards tracking bias metrics and ensuring equitable screening across job requisitions.
 - **🤖 Deterministic Interview Generation**: Auto-generate consistent, role-specific interview questions based on anonymized candidate profiles.
 - **📧 Blind Email Dispatch**: Communicate seamlessly with shortlisted candidates without compromising their anonymized identities.
-- **📱 Transparent Job Seeker Portal**: Candidates receive transparent, bias-free evaluation feedback on their dashboard.
 
 ## 💻 Technology Stack
 
@@ -45,11 +44,10 @@ With robust multi-tenant workspace isolation, detailed diversity analytics, and 
 
 ## 🏗️ Architecture & Roles
 
-HireBlind operates on a strict **3-Role Architecture**:
+HireBlind operates on a strict **2-Role Architecture**:
 
 1. **System Admin**: Manages tenant workspaces, configurations, and oversees high-level audit logs.
 2. **Recruiter**: Reviews anonymized resumes, generates interview questions, and manages multiple job requisitions within their scoped workspace.
-3. **Job Seeker**: Submits applications, tracks their progress, and views transparent feedback on their evaluations.
 
 ## 🚀 Installation & Setup
 
@@ -101,14 +99,6 @@ Start the React development server:
 ```bash
 npm start
 ```
-
-## 📸 Screenshots
-
-*(Replace these with actual screenshots of your application)*
-
-| Recruiter Dashboard | Analytics Metrics | Validated Job Seeker View |
-|:---:|:---:|:---:|
-| <img src="https://via.placeholder.com/300x200?text=Dashboard+UI" alt="Dashboard" width="300"> | <img src="https://via.placeholder.com/300x200?text=Diversity+Analytics" alt="Analytics" width="300"> | <img src="https://via.placeholder.com/300x200?text=Seeker+View" alt="Seeker View" width="300"> |
 
 ## 🤝 Contributing
 
