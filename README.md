@@ -110,11 +110,6 @@ Feel free to check out the [issues page](https://github.com/YuvikaSingodia10/COP
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ---
 
 <p align="center">
