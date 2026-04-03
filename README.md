@@ -1,5 +1,4 @@
 <p align="center">
-  <img src="https://via.placeholder.com/150/000000/FFFFFF/?text=HireBlind" alt="HireBlind Logo" width="150" height="150">
   <h1 align="center">HireBlind</h1>
   <p align="center">
     <strong>The Enterprise-Grade B2B SaaS for Bias-Free Resume Screening</strong>
