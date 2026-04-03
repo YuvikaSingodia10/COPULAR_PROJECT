@@ -1,0 +1,14 @@
+
+> hireblind-frontend@1.0.0 start
+> react-scripts start
+
+Cannot find module 'ajv/dist/compile/codegen'
+Require stack:
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\ajv-keywords\dist\definitions\typeof.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\ajv-keywords\dist\keywords\typeof.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\ajv-keywords\dist\keywords\index.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\ajv-keywords\dist\index.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\schema-utils\dist\validate.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\schema-utils\dist\index.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\webpack-dev-server\lib\Server.js
+- C:\Users\user\OneDrive\Desktop\project\hireblind\frontend\node_modules\react-scripts\scripts\start.js
