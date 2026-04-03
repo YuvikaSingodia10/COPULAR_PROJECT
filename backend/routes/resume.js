@@ -98,31 +98,37 @@ router.post('/upload', verifyToken, (req, res) => {
             req.user.id
           );
 
-          // Score the anonymised resume
-          const { score, explanation } = scoreResume(anonymisedText, jobDesc);
+          // Score the anonymised resume (now returns confidence too)
+          const { score, confidence, explanation } = scoreResume(anonymisedText, jobDesc);
 
           // Store ONLY anonymised text in DB (never raw PII)
           await pool.query(
-            'INSERT INTO candidates (candidate_code, resume_text, score, explanation) VALUES (?, ?, ?, ?)',
-            [candidateCode, anonymisedText, score, JSON.stringify(explanation)]
+            'INSERT INTO candidates (candidate_code, resume_text, score, confidence_score, explanation) VALUES (?, ?, ?, ?, ?)',
+            [candidateCode, anonymisedText, score, confidence, JSON.stringify(explanation)]
           );
 
           // Log the upload
           await pool.query(
-            'INSERT INTO audit_logs (action, candidate_code, performed_by) VALUES (?, ?, ?)',
-            ['RESUME_UPLOADED', candidateCode, req.user.id]
+            'INSERT INTO audit_logs (action, candidate_code, performed_by, details) VALUES (?, ?, ?, ?)',
+            ['RESUME_UPLOADED', candidateCode, req.user.id, `File: ${file.originalname}`]
           );
 
           // Log ranking generated
           await pool.query(
-            'INSERT INTO audit_logs (action, candidate_code, performed_by) VALUES (?, ?, ?)',
-            ['RANKING_GENERATED', candidateCode, req.user.id]
+            'INSERT INTO audit_logs (action, candidate_code, performed_by, details) VALUES (?, ?, ?, ?)',
+            [
+              'RANKING_GENERATED',
+              candidateCode,
+              req.user.id,
+              JSON.stringify({ score, confidence, skills_in_jd: jobDesc.skills }),
+            ]
           );
 
           results.push({
             file: file.originalname,
             candidateCode,
             score,
+            confidence,
             status: 'success',
           });
         } catch (fileErr) {

@@ -1,8 +1,9 @@
 import React from 'react';
 import ExplanationTag from './ExplanationTag';
+import ConfidenceBadge from './ConfidenceBadge';
 
-function CandidateCard({ candidate, isAdmin, onReveal, revealData }) {
-  const { rank, candidate_code, score, explanation } = candidate;
+function CandidateCard({ candidate, isAdmin, onReveal, revealData, onStatusChange, onOverride }) {
+  const { rank, candidate_code, score, confidence_score, status, explanation } = candidate;
 
   const getRankClass = () => {
     if (rank === 1) return 'rank-1';
@@ -25,6 +26,17 @@ function CandidateCard({ candidate, isAdmin, onReveal, revealData }) {
     return `#${rank}`;
   };
 
+  const getStatusColor = () => {
+    switch (status) {
+      case 'shortlisted': return { bg: 'rgba(108, 60, 224, 0.15)', color: '#8b5cf6', border: 'rgba(108, 60, 224, 0.3)' };
+      case 'accepted': return { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981', border: 'rgba(16, 185, 129, 0.3)' };
+      case 'rejected': return { bg: 'rgba(239, 68, 68, 0.15)', color: '#f87171', border: 'rgba(239, 68, 68, 0.3)' };
+      default: return { bg: 'rgba(255,255,255,0.05)', color: 'var(--text-muted)', border: 'var(--border-color)' };
+    }
+  };
+
+  const statusStyle = getStatusColor();
+
   return (
     <div className={`candidate-card ${getRankClass()}`} style={{ animationDelay: `${(rank - 1) * 0.05}s` }}>
       <div className="candidate-header">
@@ -36,22 +48,68 @@ function CandidateCard({ candidate, isAdmin, onReveal, revealData }) {
             <div className="candidate-code">{candidate_code}</div>
             <div className="candidate-score-label">Rank #{rank}</div>
           </div>
+          <span
+            className="status-badge"
+            style={{
+              background: statusStyle.bg,
+              color: statusStyle.color,
+              border: `1px solid ${statusStyle.border}`,
+            }}
+          >
+            {(status || 'pending').toUpperCase()}
+          </span>
         </div>
 
         <div className="d-flex align-items-center gap-3">
-          {isAdmin && !revealData && (
-            <button
-              className="btn-reveal"
-              onClick={() => onReveal(candidate)}
-            >
-              👁️ Reveal Identity
-            </button>
-          )}
+          <ConfidenceBadge confidence={parseFloat(confidence_score) || 0} />
           <div className="score-display">
             <div className="score-value">{score}</div>
             <div className="score-label">Points</div>
           </div>
         </div>
+      </div>
+
+      {/* Action Buttons — Human in the loop */}
+      <div className="candidate-actions">
+        {status !== 'shortlisted' && status !== 'accepted' && (
+          <button
+            className="action-btn shortlist"
+            onClick={() => onStatusChange(candidate_code, 'shortlisted')}
+          >
+            ⭐ Shortlist
+          </button>
+        )}
+        {status !== 'accepted' && (
+          <button
+            className="action-btn accept"
+            onClick={() => onStatusChange(candidate_code, 'accepted')}
+          >
+            ✔ Accept
+          </button>
+        )}
+        {status !== 'rejected' && (
+          <button
+            className="action-btn reject"
+            onClick={() => onStatusChange(candidate_code, 'rejected')}
+          >
+            ✘ Reject
+          </button>
+        )}
+        <button
+          className="action-btn override"
+          onClick={() => onOverride(candidate)}
+          title="Override this candidate's ranking"
+        >
+          🚩 Override
+        </button>
+        {isAdmin && !revealData && (
+          <button
+            className="btn-reveal"
+            onClick={() => onReveal(candidate)}
+          >
+            👁️ Reveal
+          </button>
+        )}
       </div>
 
       {revealData && (

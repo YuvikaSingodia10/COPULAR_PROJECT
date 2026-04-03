@@ -5,6 +5,8 @@ import AdminDashboard from './pages/AdminDashboard';
 import UploadResume from './pages/UploadResume';
 import RankingDashboard from './pages/RankingDashboard';
 import AuditLog from './pages/AuditLog';
+import CompliancePanel from './pages/CompliancePanel';
+import InterviewScheduler from './pages/InterviewScheduler';
 
 function AppNavbar({ user, onLogout }) {
   const navigate = useNavigate();
@@ -33,13 +35,13 @@ function AppNavbar({ user, onLogout }) {
             {user.role === 'admin' && (
               <li className="nav-item">
                 <NavLink className="nav-link" to="/admin">
-                  Job Description
+                  Job Setup
                 </NavLink>
               </li>
             )}
             <li className="nav-item">
               <NavLink className="nav-link" to="/upload">
-                Upload Resumes
+                Upload
               </NavLink>
             </li>
             <li className="nav-item">
@@ -47,12 +49,24 @@ function AppNavbar({ user, onLogout }) {
                 Rankings
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" to="/interviews">
+                Interviews
+              </NavLink>
+            </li>
             {user.role === 'admin' && (
-              <li className="nav-item">
-                <NavLink className="nav-link" to="/audit">
-                  Audit Log
-                </NavLink>
-              </li>
+              <>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/compliance">
+                    Compliance
+                  </NavLink>
+                </li>
+                <li className="nav-item">
+                  <NavLink className="nav-link" to="/audit">
+                    Audit Log
+                  </NavLink>
+                </li>
+              </>
             )}
           </ul>
           <div className="d-flex align-items-center gap-3">
@@ -131,6 +145,22 @@ function App() {
           element={
             <ProtectedRoute user={user}>
               <RankingDashboard user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/interviews"
+          element={
+            <ProtectedRoute user={user}>
+              <InterviewScheduler user={user} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/compliance"
+          element={
+            <ProtectedRoute user={user} requiredRole="admin">
+              <CompliancePanel user={user} />
             </ProtectedRoute>
           }
         />

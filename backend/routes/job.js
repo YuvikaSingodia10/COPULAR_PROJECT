@@ -8,7 +8,7 @@ const router = express.Router();
 // POST /api/job — Admin only: Create a new job description
 router.post('/', verifyToken, requireAdmin, async (req, res) => {
   try {
-    const { skills, min_experience } = req.body;
+    const { title, skills, min_experience, role_keywords } = req.body;
 
     if (!skills || min_experience === undefined || min_experience === null) {
       return res.status(400).json({ error: 'Skills and min_experience are required.' });
@@ -19,10 +19,10 @@ router.post('/', verifyToken, requireAdmin, async (req, res) => {
       return res.status(400).json({ error: 'min_experience must be a non-negative integer.' });
     }
 
-    await pool.query('INSERT INTO job_descriptions (skills, min_experience) VALUES (?, ?)', [
-      skills,
-      minExp,
-    ]);
+    await pool.query(
+      'INSERT INTO job_descriptions (title, skills, min_experience, role_keywords) VALUES (?, ?, ?, ?)',
+      [title || 'Untitled Position', skills, minExp, role_keywords || null]
+    );
 
     res.status(201).json({ message: 'Job description created successfully.' });
   } catch (err) {

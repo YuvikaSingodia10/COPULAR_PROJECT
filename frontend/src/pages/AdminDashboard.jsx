@@ -4,8 +4,10 @@ import axios from 'axios';
 const API = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 function AdminDashboard({ user }) {
+  const [title, setTitle] = useState('');
   const [skills, setSkills] = useState('');
   const [minExperience, setMinExperience] = useState('');
+  const [roleKeywords, setRoleKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,7 +26,6 @@ function AdminDashboard({ user }) {
       const res = await axios.get(`${API}/job`, { headers });
       setCurrentJob(res.data);
     } catch (err) {
-      // No job yet — that's fine
       setCurrentJob(null);
     } finally {
       setFetchLoading(false);
@@ -39,13 +40,17 @@ function AdminDashboard({ user }) {
 
     try {
       await axios.post(`${API}/job`, {
+        title: title || 'Untitled Position',
         skills,
         min_experience: parseInt(minExperience, 10),
+        role_keywords: roleKeywords || undefined,
       }, { headers });
 
       setSuccess('Job description saved successfully!');
+      setTitle('');
       setSkills('');
       setMinExperience('');
+      setRoleKeywords('');
       fetchCurrentJob();
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to save job description.');
@@ -75,6 +80,23 @@ function AdminDashboard({ user }) {
 
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
+                <label className="form-label-dark" htmlFor="admin-title">
+                  Job Title
+                </label>
+                <input
+                  id="admin-title"
+                  type="text"
+                  className="form-control form-control-dark"
+                  placeholder="e.g. Senior Software Engineer"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+                <small style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                  Used for role relevance scoring
+                </small>
+              </div>
+
+              <div className="mb-3">
                 <label className="form-label-dark" htmlFor="admin-skills">
                   Required Skills
                 </label>
@@ -92,7 +114,7 @@ function AdminDashboard({ user }) {
                 </small>
               </div>
 
-              <div className="mb-4">
+              <div className="mb-3">
                 <label className="form-label-dark" htmlFor="admin-experience">
                   Minimum Experience (years)
                 </label>
@@ -106,6 +128,23 @@ function AdminDashboard({ user }) {
                   min="0"
                   required
                 />
+              </div>
+
+              <div className="mb-4">
+                <label className="form-label-dark" htmlFor="admin-role-keywords">
+                  Role Keywords (optional)
+                </label>
+                <input
+                  id="admin-role-keywords"
+                  type="text"
+                  className="form-control form-control-dark"
+                  placeholder="e.g. backend, microservices, team lead, architect"
+                  value={roleKeywords}
+                  onChange={(e) => setRoleKeywords(e.target.value)}
+                />
+                <small style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                  Comma-separated keywords for role relevance scoring. Auto-detected from title if blank.
+                </small>
               </div>
 
               <button
@@ -139,6 +178,17 @@ function AdminDashboard({ user }) {
               </div>
             ) : currentJob ? (
               <div>
+                {currentJob.title && currentJob.title !== 'Untitled Position' && (
+                  <div className="mb-3">
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                      Job Title
+                    </div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--primary-light)' }}>
+                      {currentJob.title}
+                    </div>
+                  </div>
+                )}
+
                 <div className="mb-3">
                   <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
                     Required Skills
@@ -162,6 +212,21 @@ function AdminDashboard({ user }) {
                   <span style={{ color: 'var(--text-muted)', marginLeft: '6px' }}>years</span>
                 </div>
 
+                {currentJob.role_keywords && (
+                  <div className="mb-3">
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                      Role Keywords
+                    </div>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                      {currentJob.role_keywords.split(',').map((kw, i) => (
+                        <span key={i} className="explanation-tag bonus" style={{ margin: 0 }}>
+                          {kw.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
                   Created: {new Date(currentJob.created_at).toLocaleString()}
                 </div>
@@ -173,6 +238,34 @@ function AdminDashboard({ user }) {
                 <p>Create one using the form on the left.</p>
               </div>
             )}
+          </div>
+
+          <div className="glass-card mt-3">
+            <h5 style={{ fontWeight: 700, marginBottom: '1rem' }}>
+              📊 Scoring Dimensions
+            </h5>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              {[
+                { icon: '🎯', label: 'Skills Match', desc: '+2 points per required skill found' },
+                { icon: '📅', label: 'Experience', desc: '+3 points if meets minimum years' },
+                { icon: '🏷️', label: 'Role Relevance', desc: 'Up to +5 points for career alignment' },
+                { icon: '⭐', label: 'Bonus Skills', desc: '+1 per additional relevant skill (max 5)' },
+                { icon: '📈', label: 'Confidence Score', desc: 'Weighted average across all dimensions' },
+              ].map((item, i) => (
+                <li key={i} style={{
+                  padding: '10px 0',
+                  borderBottom: i < 4 ? '1px solid var(--border-color)' : 'none',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                    <div>
+                      <div style={{ fontWeight: 600, fontSize: '0.88rem' }}>{item.label}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{item.desc}</div>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

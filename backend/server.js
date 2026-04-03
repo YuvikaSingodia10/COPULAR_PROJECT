@@ -8,6 +8,7 @@ const jobRoutes = require('./routes/job');
 const resumeRoutes = require('./routes/resume');
 const candidateRoutes = require('./routes/candidates');
 const auditRoutes = require('./routes/audit');
+const interviewRoutes = require('./routes/interview');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,6 +24,7 @@ app.use('/api/job', jobRoutes);
 app.use('/api/resume', resumeRoutes);
 app.use('/api/candidates', candidateRoutes);
 app.use('/api/audit', auditRoutes);
+app.use('/api/interviews', interviewRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
